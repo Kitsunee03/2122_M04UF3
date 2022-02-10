@@ -8,7 +8,7 @@
 </head>
 
 <body>
-	<h1>Te falta calle</h1>
+	<h1>Te falta calle</h1> 
 	<script>
 		let config = {
 			width: 800,
@@ -23,12 +23,22 @@
 		
 		function preload () {
 			this.load.image('robot','character.png');
+			this.load.image('bluecar','BlueCar.png');
+			this.load.image('redcar','RedCar.png');
+			this.load.image('orangecar','OrangeCar.png');
+			this.load.image('greencar','GreenCar.png');
+			this.load.image('background','Road.png');
 		}
 		function create () {
-			image = this.add.image(300, 350, 'robot');
+			backgound = this.add.image(400,300,'background');
+			player_image = this.add.image(700, 450, 'robot');
+			bluecar_image = this.add.image(150, 140, 'bluecar');
+			redcar_image = this.add.image(200, 235, 'redcar');
+			orangecar_image = this.add.image(450, 415, 'orangecar');
+			greencar_image = this.add.image(600, 325, 'greencar');
 		}
 		function update () {
-			image.rotation += 0.01;
+			
 		}
 	</script>
 </body>

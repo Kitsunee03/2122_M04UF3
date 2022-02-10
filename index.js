@@ -2,10 +2,13 @@
 
 let http = require("http");
 let fs=require("fs");
+const data =require('./images.json');
 
 let http_server = http.createServer(function(req,res) {
-	if (req.url == "/character.png"){
-		fs.readFile("character.png", function(err, data) {
+
+for(let i=0; i < data.images.length; i++){
+	if (req.url == "/" + data.images[i]){
+		fs.readFile(data.images[i], function(err, data) {
 			if (err) {
 				console.log("Error");
 				return
@@ -14,7 +17,7 @@ let http_server = http.createServer(function(req,res) {
 			res.end(data);
 		});
 	}
-
+}
 
 	fs.readFile("index.html",function(err, data){
 		if (err){
