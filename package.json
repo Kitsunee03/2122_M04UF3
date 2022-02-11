@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/Kitsunee03/2122_M04UF3/issues"
   },
-  "homepage": "https://github.com/Kitsunee03/2122_M04UF3#readme"
+  "homepage": "https://github.com/Kitsunee03/2122_M04UF3#readme",
+  "dependencies": {
+    "nodemon": "^2.0.15"
+  }
 }

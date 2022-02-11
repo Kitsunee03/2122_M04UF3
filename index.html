@@ -2,27 +2,51 @@
 <html>
 <head>
 	
-	<title>Mucha Calle Simulator</title>
+	<title>Te Falta Calle Simulator</title>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js"></script>
 
 </head>
 
 <body>
-	<h1>Te falta calle</h1> 
+	<h1>TFCS</h1>
+	<h3>Te falta calle, asike  te toca cruzar por carretera</h3>
 	<script>
+	let cursors;
+	let background;
+	let player_img;
+	let bluecar_img;
+	let redcar_img;
+	let greencar_img;
+	let orangecar_img;
+
+	let game_w = 800;
+	let game_h = 600;
+	let offset_x = -128;
+
+	let bluecar_speed = 1.5;
+	let redcar_speed = 1;
+	let orangecar_speed = 2;
+	let greencar_speed = 0.7;
+
 		let config = {
-			width: 800,
-			height:600,
+			width: game_w,
+			height: game_h,
 			scene: {
 				preload: preload,
 				create: create,
 				update: update
+			},
+			physics: {
+				default: 'arcade',
+				arcade: {
+					debug: true
+				}
 			}
 		}
 		let game = new Phaser.Game(config);
 		
 		function preload () {
-			this.load.image('robot','character.png');
+			this.load.image('kakashi','character.png');
 			this.load.image('bluecar','BlueCar.png');
 			this.load.image('redcar','RedCar.png');
 			this.load.image('orangecar','OrangeCar.png');
@@ -30,15 +54,42 @@
 			this.load.image('background','Road.png');
 		}
 		function create () {
-			backgound = this.add.image(400,300,'background');
-			player_image = this.add.image(700, 450, 'robot');
-			bluecar_image = this.add.image(150, 140, 'bluecar');
-			redcar_image = this.add.image(200, 235, 'redcar');
-			orangecar_image = this.add.image(450, 415, 'orangecar');
-			greencar_image = this.add.image(600, 325, 'greencar');
+			cursors = this.input.keyboard.createCursorKeys();
+			backgound = this.add.image(game_w/2,game_h/2,'background');
+			
+			bluecar_img = this.add.image(150, 140, 'bluecar');
+			bluecar_img.flipX = true;
+			redcar_img = this.add.image(200, 235, 'redcar');
+			greencar_img = this.add.image(600, 325, 'greencar');
+			orangecar_img = this.add.image(450, 415, 'orangecar');
+			
+			player_img = this.add.image(700, 450, 'kakashi');
+			player_img.setScale(0.15);
+
+			this.physics.add.existing(bluecar_img, false);
+			this.physics.add.existing(redcar_img, false);
+			this.physics.add.existing(greencar_img, false);
+			this.physics.add.existing(orangecar_img, false);
+			this.physics.add.existing(player_img, false);
 		}
 		function update () {
-			
+			bluecar_img.x += bluecar_speed;
+			redcar_img.x -= redcar_speed;
+			greencar_img.x -= greencar_speed;
+			orangecar_img.x -= orangecar_speed;
+
+			carreset(bluecar_img);
+			carreset(redcar_img);
+			carreset(greencar_img);
+			carreset(orangecar_img);
+		}
+		function carreset(car) {
+			if (!car.flipX && car.x < offset_x) {
+				car.x = game_w - offset_x;
+			}
+			else if (car.flipX && car.x > game_w - offset_x) {
+				car.x = offset_x;
+			}
 		}
 	</script>
 </body>
