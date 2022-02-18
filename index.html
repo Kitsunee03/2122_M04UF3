@@ -10,7 +10,8 @@
 <body>
 	<h1>TFCS</h1>
 	<h3>Te falta calle, asike  te toca cruzar por carretera</h3>
-	<script>
+
+<script>
 	let cursors;
 	let background;
 	let player_img;
@@ -21,77 +22,139 @@
 
 	let game_w = 800;
 	let game_h = 600;
-	let offset_x = -128;
+	let carOffset_x = -128;
+	let score_txt;
+	let score = 0;
+	let lives_txt;
+	let lives = 3;
+	let crossing = false;
 
-	let bluecar_speed = 1.5;
-	let redcar_speed = 1;
-	let orangecar_speed = 2;
-	let greencar_speed = 0.7;
+	let speed = 1;
+	let bluecar_speed = 2.5;
+	let redcar_speed = 2;
+	let orangecar_speed = 3;
+	let greencar_speed = 1.5;
 
-		let config = {
-			width: game_w,
-			height: game_h,
-			scene: {
-				preload: preload,
-				create: create,
-				update: update
-			},
-			physics: {
-				default: 'arcade',
-				arcade: {
-					debug: true
-				}
+	let config = {
+		width: game_w,
+		height: game_h,
+		scene: {
+			preload: preload,
+			create: create,
+			update: update
+		},
+		physics: {
+			default: 'arcade',
+			arcade: {
+				debug: true
 			}
 		}
-		let game = new Phaser.Game(config);
+	}
+	let game = new Phaser.Game(config);
+	
+	function preload () {
+		this.load.image('kakashi','character.png');
+		this.load.image('bluecar','BlueCar.png');
+		this.load.image('redcar','RedCar.png');
+		this.load.image('orangecar','OrangeCar.png');
+		this.load.image('greencar','GreenCar.png');
+		this.load.image('background','Road.png');
+	}
+	function create () {
+		cursors = this.input.keyboard.createCursorKeys();
+		backgound = this.add.image(game_w/2,game_h/2,'background');
 		
-		function preload () {
-			this.load.image('kakashi','character.png');
-			this.load.image('bluecar','BlueCar.png');
-			this.load.image('redcar','RedCar.png');
-			this.load.image('orangecar','OrangeCar.png');
-			this.load.image('greencar','GreenCar.png');
-			this.load.image('background','Road.png');
-		}
-		function create () {
-			cursors = this.input.keyboard.createCursorKeys();
-			backgound = this.add.image(game_w/2,game_h/2,'background');
-			
-			bluecar_img = this.add.image(150, 140, 'bluecar');
-			bluecar_img.flipX = true;
-			redcar_img = this.add.image(200, 235, 'redcar');
-			greencar_img = this.add.image(600, 325, 'greencar');
-			orangecar_img = this.add.image(450, 415, 'orangecar');
-			
-			player_img = this.add.image(700, 450, 'kakashi');
-			player_img.setScale(0.15);
+		bluecar_img = this.add.image(150, 145, 'bluecar');
+		bluecar_img.flipX = true;
+		redcar_img = this.add.image(200, 235, 'redcar');
+		greencar_img = this.add.image(600, 325, 'greencar');
+		orangecar_img = this.add.image(450, 415, 'orangecar');
+		
+		player_img = this.add.image(350, 40, 'kakashi');
+		player_img.setScale(0.1);
 
-			this.physics.add.existing(bluecar_img, false);
-			this.physics.add.existing(redcar_img, false);
-			this.physics.add.existing(greencar_img, false);
-			this.physics.add.existing(orangecar_img, false);
-			this.physics.add.existing(player_img, false);
-		}
-		function update () {
-			bluecar_img.x += bluecar_speed;
-			redcar_img.x -= redcar_speed;
-			greencar_img.x -= greencar_speed;
-			orangecar_img.x -= orangecar_speed;
+		this.physics.add.existing(bluecar_img, false);
+		this.physics.add.existing(redcar_img, false);
+		this.physics.add.existing(greencar_img, false);
+		this.physics.add.existing(orangecar_img, false);
+		this.physics.add.existing(player_img, false);
 
-			carreset(bluecar_img);
-			carreset(redcar_img);
-			carreset(greencar_img);
-			carreset(orangecar_img);
+		let cars = [bluecar_img, redcar_img, greencar_img, orangecar_img];
+		for (let i=0;i<cars.length;i++) {
+			this.physics.add.collider(player_img, cars[i], function (player, car){
+				lives--;
+				lives_txt.text = lives.toString();
+				reset();
+			});
 		}
-		function carreset(car) {
-			if (!car.flipX && car.x < offset_x) {
-				car.x = game_w - offset_x;
-			}
-			else if (car.flipX && car.x > game_w - offset_x) {
-				car.x = offset_x;
+		
+		this.add.text(game_w/2, 64, "Vidas:");
+		lives_txt = this.add.text(game_w/2+64, 64, lives);
+
+		this.add.text(game_w/2+128, 64, "Puntos:");
+		score_txt = this.add.text(game_w/2+196, 64, score);
+	}
+
+	function update () {
+		if (cursors.up.isDown && player_img.y >= 0){
+			player_img.y -= speed;
+			if ( player_img.y < 10 && crossing == true){
+				score++;
+				score_txt.text = score.toString();
+				reset();
 			}
 		}
-	</script>
+		if (cursors.down.isDown && player_img.y <= game_h - 20){
+			player_img.y += speed;
+			if (player_img.y == game_h - 30 ){
+				crossing = true;
+			}
+		}
+		if (cursors.left.isDown && player_img.x > 20) {
+			player_img.x -= speed;
+			player_img.flipX = true;
+		}
+		if (cursors.right.isDown && player_img.x < game_w){
+			player_img.x += speed;
+			player_img.flipX = false;
+		}
+
+		if (lives == 0){
+			lives = 3;
+			score = 0;
+			reset();
+		}
+
+		bluecar_img.x += bluecar_speed;
+		redcar_img.x -= redcar_speed;
+		greencar_img.x -= greencar_speed;
+		orangecar_img.x -= orangecar_speed;
+
+		carreset(bluecar_img);
+		carreset(redcar_img);
+		carreset(greencar_img);
+		carreset(orangecar_img);
+	}
+
+	function carreset(car) {
+		if (!car.flipX && car.x < carOffset_x) {
+			car.x = game_w - carOffset_x;
+		}
+		else if (car.flipX && car.x > game_w - carOffset_x) {
+			car.x = carOffset_x;
+		}
+	}
+	function reset(){
+		
+		bluecar_img.x = game_w - carOffset_x;
+		redcar_img.x = carOffset_x;
+		greencar_img.x = carOffset_x;
+		orangecar_img.x = carOffset_x;
+		player_img.x = 350; player_img.y = 40;
+		crossing = false;
+	}
+</script>
+
 </body>
 
 </html>
